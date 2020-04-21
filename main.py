@@ -1,10 +1,6 @@
-import time
-import requests
-from pytz import timezone
-import datetime
-import random
-from webhook import Webhook
-import json
+import time, requests, datetime, random, json
+from pytz import timezone  
+from webhook import Webhook 
 
 tz = timezone('EST')
 interval = 35
@@ -53,7 +49,7 @@ def main(tracking_number, site, is_first_time):
         print('data err')
         return False
       for each_status in data['trackDetails'][0]['shipmentProgressActivities']:
-        if each_status not in tracking_details:
+        if str(each_status['date'])+str(each_status['time'])+str(each_status['location']) not in tracking_details:
           webhook_status = str(each_status['activityScan'])+' in '+str(each_status['location'])+' ('+str(each_status['time']).replace('A.M.','AM').replace('P.M.','PM')+')'
           print(webhook_status)
           path = 'track.json'
@@ -62,7 +58,7 @@ def main(tracking_number, site, is_first_time):
           image = 'https://awards.brandingforum.org/wp-content/uploads/2016/05/UPS-Logo.jpg'
           if not is_first_time:
             send.embed('https://www.ups.com/track?tracknum='+tracking_number,'UPS Tracker Update - '+tracking_number,webhook_status,image,quick,path)
-          tracking_details.append(each_status)
+          tracking_details.append(str(each_status['date'])+str(each_status['time'])+str(each_status['location']))
 
 
 
